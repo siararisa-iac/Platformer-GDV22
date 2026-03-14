@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D playerRb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
     private float horizontalInput;
     private bool isFacingRight = true;
     private bool isJump = false;
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     // Where we get input
@@ -43,6 +45,12 @@ public class PlayerController : MonoBehaviour
     {
         // Store input data in update because controls need to be updated every frame
         horizontalInput = Input.GetAxis("Horizontal");
+        float animationMoveSpeed = Mathf.Abs(horizontalInput);
+        if (animator != null)
+        {
+            animator.SetFloat("moveSpeed", animationMoveSpeed);
+        }
+
         Flip(horizontalInput);
 
         if (Input.GetKeyDown(KeyCode.Space))
