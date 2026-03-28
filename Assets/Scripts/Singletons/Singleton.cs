@@ -7,7 +7,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     public static T Instance { get; private set; }
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         // Check if there is already an instance
         // and you are not the ACTUAL instance

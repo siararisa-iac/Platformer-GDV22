@@ -1,10 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class CurrencyManager : Singleton<CurrencyManager>
 {
     // collection of all the balance in game
     private List<Currency> currencies;
+
+    // Acts like a delegate event but doesnt need an instance. Can be used directly
+    public Action<CurrencyType, int> OnCurrencyBalanceUpdated;
 
     public void Initialize()
     {
@@ -22,7 +26,7 @@ public class CurrencyManager : Singleton<CurrencyManager>
             if (currency.CurrencyType == currencyType)
             {
                 currency.Balance += addedAmount;
-                Debug.Log($"New {currency.CurrencyType} Balance = {currency.Balance}");
+                OnCurrencyBalanceUpdated?.Invoke(currencyType, currency.Balance);
             }
         }
     }

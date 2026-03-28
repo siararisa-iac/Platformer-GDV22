@@ -24,11 +24,14 @@ public class PlayerController : MonoBehaviour
     // What layers are considered as a ground
     private LayerMask groundLayers;
 
+    [SerializeField]
+    private Transform spawnPoint;
 
     private Rigidbody2D playerRb;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
     private float horizontalInput;
+    private bool canControl = true;
     private bool isFacingRight = true;
     private bool isJump = false;
 
@@ -40,9 +43,44 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    private void Start()
+    {
+        GameManager.Instance.OnGameStarted += HandleGameStarted;
+        GameManager.Instance.OnGameEnded += HandleGameEnded;
+    }
+
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnGameStarted -= HandleGameStarted;
+            GameManager.Instance.OnGameEnded -= HandleGameEnded;
+        }
+    }
+
+    private void HandleGameStarted()
+    {
+        transform.position = spawnPoint.position;
+        canControl = true;
+        playerRb.WakeUp();
+    }
+
+    private void HandleGameEnded(bool isWin)
+    {
+        canControl = false;
+        playerRb.Sleep();
+    }
+
+
     // Where we get input
     private void Update()
     {
+        if (!canControl)
+        {
+            animator.SetFloat("moveSpeed", 0);
+            return;
+        }
+
         // Store input data in update because controls need to be updated every frame
         horizontalInput = Input.GetAxis("Horizontal");
         float animationMoveSpeed = Mathf.Abs(horizontalInput);
